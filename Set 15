@@ -1,0 +1,135 @@
+1)
+
+import heapq
+
+goal_state = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+
+# Manhattan distance
+def manhattan(state):
+    distance = 0
+    for i in range(3):
+        for j in range(3):
+            val = state[i][j]
+            if val != 0:
+                goal_x = (val - 1) // 3
+                goal_y = (val - 1) % 3
+                distance += abs(i - goal_x) + abs(j - goal_y)
+    return distance
+
+# Find position of 0 (blank)
+def find_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+# Generate next states
+def neighbors(state):
+    x, y = find_blank(state)
+    moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    results = []
+    for dx, dy in moves:
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            new_state = [row[:] for row in state]
+            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
+            results.append(new_state)
+    return results
+
+# A* Search
+def solve(start):
+    heap = []
+    heapq.heappush(heap, (manhattan(start), 0, start, []))
+    visited = set()
+
+    while heap:
+        est, cost, current, path = heapq.heappop(heap)
+        serialized = str(current)
+        if serialized in visited:
+            continue
+        visited.add(serialized)
+        if current == goal_state:
+            return path + [current]
+        for neighbor in neighbors(current):
+            heapq.heappush(heap, (cost + 1 + manhattan(neighbor), cost + 1, neighbor, path + [current]))
+
+initial_state = [[1, 5, 3], [4, 2, 6], [7, 8, 0]]
+solution = solve(initial_state)
+
+print("Steps to reach goal:")
+for s in solution:
+    for row in s:
+        print(row)
+    print()
+
+2)
+import random
+
+N = 8
+POP_SIZE = 100
+MUTATION_RATE = 0.03
+GENERATIONS = 1000
+
+def fitness(chromosome):
+    conflicts = 0
+    for i in range(N):
+        for j in range(i + 1, N):
+            if abs(i - j) == abs(chromosome[i] - chromosome[j]):
+                conflicts += 1
+    return conflicts
+
+def crossover(p1, p2):
+    cut = random.randint(1, N - 2)
+    child = p1[:cut] + p2[cut:]
+    return child
+
+def mutate(chrom):
+    if random.random() < MUTATION_RATE:
+        i = random.randint(0, N - 1)
+        chrom[i] = random.randint(0, N - 1)
+    return chrom
+
+def generate_population():
+    return [[random.randint(0, N - 1) for _ in range(N)] for _ in range(POP_SIZE)]
+
+population = generate_population()
+
+for gen in range(GENERATIONS):
+    population.sort(key=fitness)
+    if fitness(population[0]) == 0:
+        print("Solution found in generation", gen)
+        print("Board:", population[0])
+        break
+    next_gen = population[:10]  # elitism
+    while len(next_gen) < POP_SIZE:
+        p1, p2 = random.choices(population[:50], k=2)
+        child = crossover(p1, p2)
+        child = mutate(child)
+        next_gen.append(child)
+    population = next_gen
+
+3)
+% Facts
+rainy(chennai).
+rainy(coimbatore).
+rainy(ooty).
+cold(ooty).
+
+% Rule: If it’s rainy and cold, then snow is possible
+snowy(X) :- rainy(X), cold(X).
+
+% Query:
+% ?- snowy(ooty).
+
+4)
+% Facts
+colour(cherry, red).
+colour(banana, yellow).
+colour(apple, red).
+colour(apple, green).
+colour(orange, orange).
+colour(X, unknown).
+
+% Query using backtracking:
+% ?- colour(Fruit, red).
+% ?- colour(apple, Color).
