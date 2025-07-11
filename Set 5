@@ -1,0 +1,130 @@
+1)]
+
+
+% Facts: possible locations and initial state
+% State is represented as state(VacuumPosition, LeftStatus, RightStatus)
+% where status is either dirty or clean
+
+% Base case: both sides clean, goal state reached
+clean(state(_, clean, clean), []).
+
+% Vacuum on left and left is dirty
+clean(state(left, dirty, R), [suck, move_right | Actions]) :-
+    clean(state(right, clean, R), Actions).
+
+% Vacuum on right and right is dirty
+clean(state(right, L, dirty), [suck, move_left | Actions]) :-
+    clean(state(left, L, clean), Actions).
+
+% Vacuum on left and left is clean
+clean(state(left, clean, R), [move_right | Actions]) :-
+    clean(state(right, clean, R), Actions).
+
+% Vacuum on right and right is clean
+clean(state(right, L, clean), [move_left | Actions]) :-
+    clean(state(left, L, clean), Actions).
+
+% Test cases
+% ?- clean(state(left, clean, clean), Actions).
+% ?- clean(state(left, dirty, clean), Actions).
+% ?- clean(state(left, dirty, dirty), Actions).
+
+
+
+
+?- clean(state(left, clean, clean), A).
+A = [].
+
+?- clean(state(left, dirty, clean), A).
+A = [suck, move_right].
+
+?- clean(state(left, dirty, dirty), A).
+A = [suck, move_right, suck, move_left].
+
+2)
+
+from collections import deque
+
+def bfs(graph, start, goal):
+    visited = set()
+    queue = deque([(start, [start])])
+
+    while queue:
+        (vertex, path) = queue.popleft()
+        if vertex == goal:
+            return path
+        if vertex not in visited:
+            visited.add(vertex)
+            for neighbor in graph[vertex]:
+                queue.append((neighbor, path + [neighbor]))
+
+# Sample graph
+graph = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F'],
+    'D': [],
+    'E': ['F'],
+    'F': []
+}
+
+path = bfs(graph, 'A', 'F')
+print("BFS Path from A to F:", path)
+
+
+3)
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Online Shopping</title>
+  <meta name="description" content="Your one-stop shop for electronics, fashion, and more!">
+  <meta name="keywords" content="shopping, ecommerce, online store, buy online">
+</head>
+<body>
+  <h1>Welcome to My Online Store</h1>
+  <p>Explore our categories:</p>
+  <ul>
+    <li><a href="electronics.html">Electronics</a></li>
+    <li><a href="fashion.html">Fashion</a></li>
+    <li><a href="home.html">Home & Kitchen</a></li>
+  </ul>
+</body>
+</html>
+
+
+4)
+
+
+% Facts
+female(pam).
+female(liz).
+female(pat).
+male(tom).
+male(bob).
+male(jim).
+male(annand).
+
+parent(pam, bob).
+parent(tom, bob).
+parent(tom, liz).
+parent(bob, jim).
+parent(pat, jim).
+parent(annand, tom).
+
+% Rules
+mother(X, Y) :- female(X), parent(X, Y).
+father(X, Y) :- male(X), parent(X, Y).
+
+grandfather(X, Y) :- male(X), parent(X, Z), parent(Z, Y).
+grandmother(X, Y) :- female(X), parent(X, Z), parent(Z, Y).
+
+sibling(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
+
+sister(X, Y) :- female(X), sibling(X, Y).
+brother(X, Y) :- male(X), sibling(X, Y).
+
+% Example queries:
+% ?- mother(pam, bob).         % true
+% ?- grandfather(tom, jim).    % true
+% ?- sister(liz, bob).         % true
