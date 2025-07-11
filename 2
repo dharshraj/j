@@ -1,0 +1,116 @@
+1)
+def water_jug_problem():
+    visited = set()
+    stack = [(0, 0)]  # (5L jug, 4L jug)
+
+    while stack:
+        a, b = stack.pop()
+        if (a, b) in visited:
+            continue
+        visited.add((a, b))
+        print(f"State: 5L={a}, 4L={b}")
+
+        if a == 3 or b == 3:
+            print("Goal reached!")
+            return
+
+        # Possible moves
+        next_states = set()
+
+        # Fill
+        next_states.add((5, b))
+        next_states.add((a, 4))
+
+        # Empty
+        next_states.add((0, b))
+        next_states.add((a, 0))
+
+        # Pour from A to B
+        pour = min(a, 4 - b)
+        next_states.add((a - pour, b + pour))
+
+        # Pour from B to A
+        pour = min(b, 5 - a)
+        next_states.add((a + pour, b - pour))
+
+        stack.extend(next_states)
+
+water_jug_problem()
+
+
+2)
+from collections import deque
+
+def is_valid(state):
+    m1, c1, boat, m2, c2 = state
+    if m1 < 0 or c1 < 0 or m2 < 0 or c2 < 0:
+        return False
+    if (m1 > 0 and m1 < c1) or (m2 > 0 and m2 < c2):
+        return False
+    return True
+
+def successors(state):
+    m1, c1, boat, m2, c2 = state
+    moves = [(1,0), (2,0), (0,1), (0,2), (1,1)]
+    res = []
+
+    for m, c in moves:
+        if boat == 'left':
+            new_state = (m1 - m, c1 - c, 'right', m2 + m, c2 + c)
+        else:
+            new_state = (m1 + m, c1 + c, 'left', m2 - m, c2 - c)
+        if is_valid(new_state):
+            res.append(new_state)
+    return res
+
+def missionaries_and_cannibals():
+    initial = (3, 3, 'left', 0, 0)
+    goal = (0, 0, 'right', 3, 3)
+    visited = set()
+    queue = deque([(initial, [])])
+
+    while queue:
+        state, path = queue.popleft()
+        if state in visited:
+            continue
+        visited.add(state)
+
+        if state == goal:
+            for step in path + [state]:
+                print(step)
+            return
+
+        for succ in successors(state):
+            queue.append((succ, path + [state]))
+
+missionaries_and_cannibals()
+
+3)
+
+% Facts
+man(socrates).
+man(einstein).
+man(alexander).
+
+% Rule
+mortal(X) :- man(X).
+
+% Sample Queries:
+% ?- mortal(socrates).       % true
+% ?- mortal(alexander).      % true
+
+
+4)
+% Rule to count vowels
+count_vowels(String, Count) :-
+    string_chars(String, Chars),
+    include(is_vowel, Chars, Vowels),
+    length(Vowels, Count).
+
+is_vowel(Char) :-
+    member(Char, [a, e, i, o, u, A, E, I, O, U]).
+
+% Sample Query:
+% ?- count_vowels("I am an brilliant student in Saveetha University", Count).
+
+
