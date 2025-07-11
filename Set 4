@@ -1,0 +1,117 @@
+1)
+
+from itertools import permutations
+
+def calculate_distance(path, graph):
+    distance = 0
+    for i in range(len(path) - 1):
+        distance += graph[path[i]][path[i+1]]
+    distance += graph[path[-1]][path[0]]  # return to start
+    return distance
+
+def tsp(graph):
+    cities = list(graph.keys())
+    min_path = None
+    min_distance = float('inf')
+
+    for perm in permutations(cities):
+        dist = calculate_distance(perm, graph)
+        if dist < min_distance:
+            min_distance = dist
+            min_path = perm
+
+    return min_path, min_distance
+
+# Example graph as adjacency matrix
+graph = {
+    'A': {'A': 0, 'B': 10, 'C': 15, 'D': 20},
+    'B': {'A': 10, 'B': 0, 'C': 35, 'D': 25},
+    'C': {'A': 15, 'B': 35, 'C': 0, 'D': 30},
+    'D': {'A': 20, 'B': 25, 'C': 30, 'D': 0}
+}
+
+path, distance = tsp(graph)
+print("Shortest Path:", path)
+print("Total Distance:", distance)
+
+2)
+graph = {
+    'A': ['B', 'C', 'D'],
+    'B': ['E', 'F'],
+    'C': ['G'],
+    'D': ['H'],
+    'E': [],
+    'F': [],
+    'G': ['I'],
+    'H': [],
+    'I': ['J'],
+    'J': ['K'],
+    'K': ['L'],
+    'L': []
+}
+
+def dfs(graph, start, goal, visited=None, path=None):
+    if visited is None:
+        visited = set()
+    if path is None:
+        path = []
+
+    visited.add(start)
+    path.append(start)
+
+    if start == goal:
+        return path
+
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            result = dfs(graph, neighbor, goal, visited, path)
+            if result:
+                return result
+    path.pop()
+    return None
+
+print("Path to L:", dfs(graph, 'A', 'L'))
+
+
+3)
+% Facts
+bird(eagle).
+bird(sparrow).
+bird(penguin).
+bird(duck).
+
+% Rules
+swim(X) :- X == penguin, !, fail.
+swim(X) :- bird(X).
+
+fly(X) :- bird(X).
+
+% Sample Queries:
+% ?- swim(penguin).   % false
+% ?- swim(duck).      % true
+% ?- fly(eagle).      % true
+
+
+4)
+
+% Rules
+bird(X) :- has_feathers(X), lays_eggs(X).
+mammal(X) :- has_fur(X), gives_birth(X).
+reptile(X) :- has_scales(X), lays_eggs(X).
+
+% Example Facts
+has_feathers(eagle).
+lays_eggs(eagle).
+
+has_fur(tiger).
+gives_birth(tiger).
+
+has_scales(snake).
+lays_eggs(snake).
+
+% Sample Queries:
+% ?- bird(eagle).        % true
+% ?- mammal(tiger).      % true
+% ?- reptile(snake).     % true
+
+
