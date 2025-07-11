@@ -1,0 +1,109 @@
+1)
+from collections import deque
+
+goal_state = [[1,2,3],[4,5,6],[7,8,0]]
+
+def get_neighbors(state):
+    directions = [(-1,0),(1,0),(0,-1),(0,1)]  # up, down, left, right
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                x, y = i, j
+    neighbors = []
+    for dx, dy in directions:
+        nx, ny = x + dx, y + dy
+        if 0<=nx<3 and 0<=ny<3:
+            new_state = [row[:] for row in state]
+            new_state[x][y], new_state[nx][ny] = new_state[nx][ny], new_state[x][y]
+            neighbors.append(new_state)
+    return neighbors
+
+def is_goal(state):
+    return state == goal_state
+
+def solve_8_puzzle(start_state):
+    queue = deque([(start_state, [])])
+    visited = set()
+    
+    while queue:
+        state, path = queue.popleft()
+        t_state = tuple(tuple(r) for r in state)
+        if t_state in visited:
+            continue
+        visited.add(t_state)
+        if is_goal(state):
+            return path + [state]
+        for neighbor in get_neighbors(state):
+            queue.append((neighbor, path + [state]))
+
+start = [[1,2,3],[5,0,6],[4,7,8]]
+solution = solve_8_puzzle(start)
+for step in solution:
+    for row in step:
+        print(row)
+    print()
+
+2)
+N = 8
+
+def is_safe(board, row, col):
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+    for i,j in zip(range(row,-1,-1), range(col,-1,-1)):
+        if board[i][j] == 1:
+            return False
+    for i,j in zip(range(row,N,1), range(col,-1,-1)):
+        if board[i][j] == 1:
+            return False
+    return True
+
+def solve(board, col):
+    if col >= N:
+        return True
+    for i in range(N):
+        if is_safe(board, i, col):
+            board[i][col] = 1
+            if solve(board, col+1):
+                return True
+            board[i][col] = 0
+    return False
+
+board = [[0]*N for _ in range(N)]
+solve(board, 0)
+for row in board:
+    print(row)
+
+3)
+% Facts
+studies(charlie, csc135).
+studies(olivia, csc135).
+studies(jack, csc131).
+studies(arthur, csc134).
+
+teaches(kirke, csc135).
+teaches(collins, csc131).
+teaches(collins, csc171).
+teaches(juniper, csc134).
+
+% Rules
+professor(X, Y) :- teaches(X, C), studies(Y, C).
+
+% Queries:
+% ?- professor(kirke, X).
+% ?- professor(collins, X).
+
+4)
+move(1, A, C, _) :-
+    write('Move disk from '), write(A),
+    write(' to '), write(C), nl.
+
+move(N, A, C, B) :-
+    N > 1,
+    M is N - 1,
+    move(M, A, B, C),
+    move(1, A, C, _),
+    move(M, B, C, A).
+
+% Query to solve for 3 disks:
+% ?- move(3, a, c, b).
