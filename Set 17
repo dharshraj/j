@@ -1,0 +1,94 @@
+1)
+
+import math
+
+def alpha_beta(node, depth, alpha, beta, maximizing_player, tree, values):
+    if depth == 0 or node not in tree:
+        return values[node]
+
+    if maximizing_player:
+        max_eval = -math.inf
+        for child in tree[node]:
+            eval = alpha_beta(child, depth - 1, alpha, beta, False, tree, values)
+            max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break
+        return max_eval
+    else:
+        min_eval = math.inf
+        for child in tree[node]:
+            eval = alpha_beta(child, depth - 1, alpha, beta, True, tree, values)
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break
+        return min_eval
+
+# Tree structure
+tree = {
+    'A': ['B', 'C', 'G'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G'],
+    'G': ['G1', 'G2']
+}
+
+values = {
+    'D': 2, 'E': 3,
+    'F': 5, 'G': 9,
+    'G1': 7, 'G2': 5
+}
+
+print("Optimal value:", alpha_beta('A', 3, -math.inf, math.inf, True, tree, values))
+
+2)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Learn SEO by optimizing title and anchor tags">
+    <meta name="keywords" content="SEO, anchor tags, title tags, optimization">
+    <meta name="author" content="Your Name">
+    <title>SEO Optimization Example</title>
+</head>
+<body>
+    <h1>Welcome to SEO Optimization</h1>
+    <p>Click the links below to learn more:</p>
+    <a href="https://example.com/seo-basics" title="Learn SEO Basics">SEO Basics</a><br>
+    <a href="https://example.com/anchor-tags" title="SEO Anchor Tags">SEO Anchor Tags</a><br>
+    <a href="https://example.com/title-tags" title="SEO Title Tags">SEO Title Tags</a>
+</body>
+</html>
+
+3)
+% Facts
+location(desk, office).
+location(apple, kitchen).
+location(flashlight, desk).
+
+% Rule to find nested location
+find_location(Item, Place) :-
+    location(Item, Place).
+find_location(Item, Place) :-
+    location(Item, Intermediate),
+    find_location(Intermediate, Place).
+
+% Query examples:
+% ?- find_location(flashlight, Where).
+
+4)
+% Predicates:
+% hypothesis(name, disease).
+% symptom(name, indication).
+
+% Symptoms
+symptom(amit, fever).
+symptom(amit, rash).
+
+% Rules
+hypothesis(Name, measles) :-
+    symptom(Name, fever),
+    symptom(Name, rash).
+
+% Query:
+% ?- hypothesis(amit, Disease).
