@@ -1,0 +1,117 @@
+1)
+
+from collections import deque
+
+goal_state = [[1, 2, 3], [4, 5, 6], [7, 8, 0]]
+
+def print_board(state):
+    for row in state:
+        print(row)
+    print()
+
+def find_zero(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return i, j
+
+def is_goal(state):
+    return state == goal_state
+
+def get_neighbors(state):
+    i, j = find_zero(state)
+    directions = [(-1,0), (1,0), (0,-1), (0,1)]
+    neighbors = []
+
+    for di, dj in directions:
+        ni, nj = i + di, j + dj
+        if 0 <= ni < 3 and 0 <= nj < 3:
+            new_state = [row[:] for row in state]
+            new_state[i][j], new_state[ni][nj] = new_state[ni][nj], new_state[i][j]
+            neighbors.append(new_state)
+
+    return neighbors
+
+def bfs(initial):
+    visited = set()
+    queue = deque([(initial, [])])
+
+    while queue:
+        state, path = queue.popleft()
+        state_tuple = tuple(tuple(row) for row in state)
+
+        if state_tuple in visited:
+            continue
+
+        visited.add(state_tuple)
+        if is_goal(state):
+            for step in path + [state]:
+                print_board(step)
+            return
+
+        for neighbor in get_neighbors(state):
+            queue.append((neighbor, path + [state]))
+
+initial_state = [[1, 2, 3], [4, 0, 6], [7, 5, 8]]
+bfs(initial_state)
+
+
+2)
+import itertools
+
+def solve():
+    letters = 'SENDMORY'
+    for perm in itertools.permutations(range(10), len(letters)):
+        s,e,n,d,m,o,r,y = perm
+        if s == 0 or m == 0:
+            continue
+        send = 1000*s + 100*e + 10*n + d
+        more = 1000*m + 100*o + 10*r + e
+        money = 10000*m + 1000*o + 100*n + 10*e + y
+
+        if send + more == money:
+            print(f"SEND = {send}, MORE = {more}, MONEY = {money}")
+            return
+
+solve()
+
+
+3)
+% Monkey and Banana Problem
+
+at(monkey, room1).
+at(banana, room2).
+at(chair, room1).
+
+% Rules
+can_reach(banana) :- 
+    at(monkey, room2),
+    at(chair, room2),
+    climb(chair),
+    grasp(banana).
+
+climb(chair).
+grasp(banana).
+
+% Movement Rule
+move(monkey, From, To) :- retract(at(monkey, From)), assert(at(monkey, To)).
+move(chair, From, To) :- retract(at(chair, From)), assert(at(chair, To)).
+
+% Query:
+% ?- move(monkey, room1, room2), move(chair, room1, room2), can_reach(banana).
+
+
+4)
+
+
+% Facts
+location(record, table).
+location(spoon, kitchen).
+location(tv, hall).
+
+% Rule
+where_is(Item, Place) :- location(Item, Place).
+
+% Queries:
+% ?- where_is(spoon, Place).     % Place = kitchen
+% ?- location(tv, Place).        % Place = hall
