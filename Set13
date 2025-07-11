@@ -1,0 +1,108 @@
+1)
+
+from collections import deque
+
+def is_valid(state):
+    m1, c1, m2, c2 = state
+    if (m1 < 0 or m1 > 3 or c1 < 0 or c1 > 3 or m2 < 0 or m2 > 3 or c2 < 0 or c2 > 3):
+        return False
+    if (m1 > 0 and m1 < c1) or (m2 > 0 and m2 < c2):
+        return False
+    return True
+
+def get_successors(state):
+    m1, c1, m2, c2, boat = state
+    successors = []
+    moves = [(1, 0), (2, 0), (0, 1), (0, 2), (1, 1)]
+
+    for m, c in moves:
+        if boat == 0:
+            new_state = (m1 - m, c1 - c, m2 + m, c2 + c, 1)
+        else:
+            new_state = (m1 + m, c1 + c, m2 - m, c2 - c, 0)
+        if is_valid(new_state[:4]):
+            successors.append(new_state)
+    return successors
+
+def solve():
+    initial_state = (3, 3, 0, 0, 0)
+    goal_state = (0, 0, 3, 3, 1)
+    queue = deque([(initial_state, [])])
+    visited = set()
+
+    while queue:
+        state, path = queue.popleft()
+        if state in visited:
+            continue
+        visited.add(state)
+        if state[:4] == goal_state[:4]:
+            return path + [state]
+        for next_state in get_successors(state):
+            queue.append((next_state, path + [state]))
+
+solution = solve()
+for step in solution:
+    print(step)
+
+2)
+from itertools import permutations
+
+def tsp(graph, start):
+    vertices = list(graph.keys())
+    vertices.remove(start)
+    min_path = float('inf')
+    best_path = []
+
+    for perm in permutations(vertices):
+        current_path = [start] + list(perm) + [start]
+        cost = sum(graph[current_path[i]][current_path[i+1]] for i in range(len(current_path)-1))
+        if cost < min_path:
+            min_path = cost
+            best_path = current_path
+    return best_path, min_path
+
+# Example Graph
+graph = {
+    'A': {'B': 10, 'C': 15, 'D': 20},
+    'B': {'A': 10, 'C': 35, 'D': 25},
+    'C': {'A': 15, 'B': 35, 'D': 30},
+    'D': {'A': 20, 'B': 25, 'C': 30}
+}
+
+path, cost = tsp(graph, 'A')
+print("Best Path:", path)
+print("Total Cost:", cost)
+
+3)
+% Initial state
+at(monkey, floor).
+at(chair, floor).
+at(bananas, ceiling).
+has(monkey, nothing).
+
+% Actions
+can(climb(monkey, chair), [at(monkey, floor), at(chair, floor)]).
+can(push(chair, bananas), [at(monkey, floor), at(chair, floor)]).
+can(grasp(monkey, bananas), [at(monkey, chair), at(bananas, ceiling)]).
+can(wave_stick(monkey), [has(monkey, stick)]).
+
+% Goal: get bananas
+goal(has(monkey, bananas)).
+
+% Sample queries:
+% ?- can(grasp(monkey, bananas), Preconds).
+% ?- goal(X).
+
+
+4)
+% Rules
+crime(X) :- american(X), weapon(Y), sells(X, Y, Z), hostile(Z).
+weapon(missile).
+hostile(countryA).
+
+% Facts
+american(robert).
+sells(robert, missile, countryA).
+
+% Query:
+% ?- crime(robert).
