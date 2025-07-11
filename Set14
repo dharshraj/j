@@ -1,0 +1,91 @@
+1)
+
+import heapq
+
+graph = {
+    'S': [('A', 1), ('C', 4)],
+    'A': [('B', 3), ('C', 1)],
+    'B': [('D', 2)],
+    'C': [('G', 12)],
+    'D': [('G', 3)],
+    'G': []
+}
+
+def uniform_cost_search(start, goal):
+    pq = [(0, start, [])]  # (cost, current_node, path)
+    visited = set()
+
+    while pq:
+        cost, node, path = heapq.heappop(pq)
+        if node in visited:
+            continue
+        path = path + [node]
+        if node == goal:
+            print("Path:", path, "Cost:", cost)
+            return
+        visited.add(node)
+        for neighbor, edge_cost in graph[node]:
+            heapq.heappush(pq, (cost + edge_cost, neighbor, path))
+
+uniform_cost_search('S', 'G')
+
+2)
+def reflex_agent(location, status):
+    if status == 'Dirty':
+        return 'Suck'
+    elif location == 'A':
+        return 'Move Right'
+    elif location == 'B':
+        return 'Move Left'
+
+# Example simulation
+locations = {'A': 'Dirty', 'B': 'Dirty'}
+current_location = 'A'
+
+for _ in range(4):
+    action = reflex_agent(current_location, locations[current_location])
+    print(f"Location: {current_location}, Status: {locations[current_location]}, Action: {action}")
+    
+    if action == 'Suck':
+        locations[current_location] = 'Clean'
+    elif action == 'Move Right':
+        current_location = 'B'
+    elif action == 'Move Left':
+        current_location = 'A'
+
+3)
+% Dog names
+dog(fido). dog(rover). dog(jane). dog(tom). dog(fred). dog(henry). dog(fido).
+
+% Cat names
+cat(mary). cat(harry). cat(bill). cat(steve).
+
+% Size of animals
+small(henry).
+medium(harry). medium(fred).
+large(fido). large(mary). large(tom). large(fred). large(steve). large(jim). large(mike).
+
+% Queries:
+% ?- dog(fido).
+% ?- cat(steve).
+% ?- large(fido).
+
+
+4)% Orbits
+orbits(mercury, sun).
+orbits(venus, sun).
+orbits(earth, sun).
+orbits(mars, sun).
+orbits(moon, earth).
+orbits(phobos, mars).
+orbits(deimos, mars).
+
+% Rule to find indirect orbits (e.g., moon orbits sun through earth)
+orbits_indirect(X, Y) :- orbits(X, Y).
+orbits_indirect(X, Y) :- orbits(X, Z), orbits_indirect(Z, Y).
+
+% Sample Queries:
+% ?- orbits_indirect(moon, sun).
+% ?- orbits_indirect(phobos, sun).
+
+
