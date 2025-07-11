@@ -1,0 +1,105 @@
+1)
+# Map regions and their adjacents
+adjacency = {
+    'WA': ['NT', 'SA'],
+    'NT': ['WA', 'SA', 'Q'],
+    'SA': ['WA', 'NT', 'Q', 'NSW', 'V'],
+    'Q': ['NT', 'SA', 'NSW'],
+    'NSW': ['SA', 'Q', 'V'],
+    'V': ['SA', 'NSW'],
+    'T': []
+}
+
+colors = ['Red', 'Green', 'Blue']
+
+def is_valid(state, region, color):
+    for neighbor in adjacency[region]:
+        if state.get(neighbor) == color:
+            return False
+    return True
+
+def backtrack(state, regions):
+    if not regions:
+        return state
+
+    region = regions[0]
+    for color in colors:
+        if is_valid(state, region, color):
+            state[region] = color
+            result = backtrack(state, regions[1:])
+            if result:
+                return result
+            del state[region]
+    return None
+
+regions = list(adjacency.keys())
+solution = backtrack({}, regions)
+print("Map Coloring Solution:")
+print(solution)
+
+2)
+import heapq
+
+graph = {
+    'A': [('B', 9), ('D', 3)],
+    'B': [('C', 6)],
+    'C': [('E', 5)],
+    'D': [('E', 10)],
+    'E': []
+}
+
+heuristics = {
+    'A': 15,
+    'B': 10,
+    'C': 10,
+    'D': 4,
+    'E': 0
+}
+
+def a_star(start, goal):
+    queue = []
+    heapq.heappush(queue, (heuristics[start], 0, start, [start]))
+
+    while queue:
+        f, cost, current, path = heapq.heappop(queue)
+        if current == goal:
+            print(f"Path: {path}, Cost: {cost}")
+            return path
+        for neighbor, weight in graph[current]:
+            g = cost + weight
+            h = heuristics[neighbor]
+            heapq.heappush(queue, (g + h, g, neighbor, path + [neighbor]))
+
+a_star('A', 'E')
+
+3)
+% Inference Engine
+interpret(true) :- !.
+interpret((GoalA, GoalB)) :- !,
+    interpret(GoalA),
+    interpret(GoalB).
+interpret(Goal) :- call(Goal).
+
+% Sample facts/rules to test:
+likes(socrates).
+likes(plato).
+smart(X) :- likes(X).
+
+% Query:
+% ?- interpret((likes(socrates), smart(socrates))).
+
+4)
+% Fact
+text('This is my first Degree in Saveetha School of Engineering.').
+
+% Vowel check
+is_vowel(Char) :- member(Char, ['a','e','i','o','u','A','E','I','O','U']).
+
+% Count vowels
+count_vowels(Text, Count) :-
+    atom_chars(Text, Chars),
+    include(is_vowel, Chars, Vowels),
+    length(Vowels, Count).
+
+% Query to test
+% ?- text(X), count_vowels(X, Count).
