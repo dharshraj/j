@@ -1,0 +1,163 @@
+1)
+
+from collections import deque
+
+def bidirectional_search(start, goal, graph):
+    if start == goal:
+        return [start]
+
+    # Initializations
+    front_visited = {start: None}
+    back_visited = {goal: None}
+    front_queue = deque([start])
+    back_queue = deque([goal])
+
+    while front_queue and back_queue:
+        # Forward direction
+        front_node = front_queue.popleft()
+        for neighbor in graph[front_node]:
+            if neighbor not in front_visited:
+                front_visited[neighbor] = front_node
+                front_queue.append(neighbor)
+                if neighbor in back_visited:
+                    return build_path(front_visited, back_visited, neighbor)
+
+        # Backward direction
+        back_node = back_queue.popleft()
+        for neighbor in graph[back_node]:
+            if neighbor not in back_visited:
+                back_visited[neighbor] = back_node
+                back_queue.append(neighbor)
+                if neighbor in front_visited:
+                    return build_path(front_visited, back_visited, neighbor)
+    return None
+
+def build_path(front, back, meeting_point):
+    # Build forward path
+    path = []
+    node = meeting_point
+    while node is not None:
+        path.append(node)
+        node = front[node]
+    path = path[::-1]
+
+    # Build backward path
+    node = back[meeting_point]
+    while node is not None:
+        path.append(node)
+        node = back[node]
+
+    return path
+
+# Define the graph
+graph = {
+    0: [4, 9],
+    4: [0, 6],
+    6: [4],
+    9: [0, 11],
+    11: [9, 12],
+    12: [11]
+}
+
+# Run the search
+path = bidirectional_search(0, 6, graph)
+print("Path to goal:", path)
+
+
+2)
+
+import numpy as np
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+# Input dataset for XOR
+X = np.array([[0,0],[0,1],[1,0],[1,1]])
+y = np.array([[0],[1],[1],[0]])
+
+# Initialize weights and biases
+np.random.seed(1)
+input_layer_neurons = 2
+hidden_layer_neurons = 2
+output_neurons = 1
+
+hidden_weights = np.random.uniform(size=(input_layer_neurons, hidden_layer_neurons))
+hidden_bias = np.random.uniform(size=(1, hidden_layer_neurons))
+output_weights = np.random.uniform(size=(hidden_layer_neurons, output_neurons))
+output_bias = np.random.uniform(size=(1, output_neurons))
+
+# Training
+lr = 0.1
+for epoch in range(10000):
+    # Forward propagation
+    hidden_layer_input = np.dot(X, hidden_weights) + hidden_bias
+    hidden_layer_output = sigmoid(hidden_layer_input)
+
+    output_layer_input = np.dot(hidden_layer_output, output_weights) + output_bias
+    predicted_output = sigmoid(output_layer_input)
+
+    # Backpropagation
+    error = y - predicted_output
+    d_predicted_output = error * sigmoid_derivative(predicted_output)
+
+    error_hidden = d_predicted_output.dot(output_weights.T)
+    d_hidden_layer = error_hidden * sigmoid_derivative(hidden_layer_output)
+
+    # Update weights and biases
+    output_weights += hidden_layer_output.T.dot(d_predicted_output) * lr
+    output_bias += np.sum(d_predicted_output, axis=0, keepdims=True) * lr
+    hidden_weights += X.T.dot(d_hidden_layer) * lr
+    hidden_bias += np.sum(d_hidden_layer, axis=0, keepdims=True) * lr
+
+print("Final output after training:")
+print(predicted_output)
+
+
+3)
+% Facts
+symptom(chennai, humid).
+symptom(chennai, cloudy).
+symptom(delhi, sunny).
+symptom(delhi, dry).
+symptom(ooty, cold).
+symptom(ooty, foggy).
+
+% Rules
+hypothesis(chennai, rainy) :-
+    symptom(chennai, humid),
+    symptom(chennai, cloudy).
+
+hypothesis(delhi, clear) :-
+    symptom(delhi, sunny),
+    symptom(delhi, dry).
+
+hypothesis(ooty, foggy_weather) :-
+    symptom(ooty, cold),
+    symptom(ooty, foggy).
+
+
+4)#
+
+% Facts
+attribute(john, hardworking).
+attribute(john, regular).
+attribute(sarah, irregular).
+attribute(sarah, average).
+attribute(mike, hardworking).
+attribute(mike, irregular).
+
+% Rules
+performance(Student, excellent) :-
+    attribute(Student, hardworking),
+    attribute(Student, regular).
+
+performance(Student, good) :-
+    attribute(Student, hardworking),
+    attribute(Student, irregular).
+
+performance(Student, average) :-
+    attribute(Student, average).
+
