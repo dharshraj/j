@@ -1,0 +1,124 @@
+1)
+
+def is_valid(board, row, col, num):
+    # Check row
+    if num in board[row]:
+        return False
+
+    # Check column
+    if num in [board[i][col] for i in range(9)]:
+        return False
+
+    # Check 3x3 sub-grid
+    start_row, start_col = 3 * (row // 3), 3 * (col // 3)
+    for i in range(3):
+        for j in range(3):
+            if board[start_row + i][start_col + j] == num:
+                return False
+    return True
+
+def solve_sudoku(board):
+    for row in range(9):
+        for col in range(9):
+            if board[row][col] == 0:
+                for num in range(1, 10):
+                    if is_valid(board, row, col, num):
+                        board[row][col] = num
+                        if solve_sudoku(board):
+                            return True
+                        board[row][col] = 0
+                return False
+    return True
+
+# Sample 9x9 board with 0 as empty
+sudoku_board = [
+    [5, 3, 0, 0, 7, 0, 0, 0, 0],
+    [6, 0, 0, 1, 9, 5, 0, 0, 0],
+    [0, 9, 8, 0, 0, 0, 0, 6, 0],
+    [8, 0, 0, 0, 6, 0, 0, 0, 3],
+    [4, 0, 0, 8, 0, 3, 0, 0, 1],
+    [7, 0, 0, 0, 2, 0, 0, 0, 6],
+    [0, 6, 0, 0, 0, 0, 2, 8, 0],
+    [0, 0, 0, 4, 1, 9, 0, 0, 5],
+    [0, 0, 0, 0, 8, 0, 0, 7, 9]
+]
+
+if solve_sudoku(sudoku_board):
+    for row in sudoku_board:
+        print(row)
+else:
+    print("No solution exists.")
+
+
+2)
+
+def is_safe(board, row, col, n):
+    for i in range(col):
+        if board[row][i] == 1:
+            return False
+    for i, j in zip(range(row, -1, -1), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+    for i, j in zip(range(row, n), range(col, -1, -1)):
+        if board[i][j] == 1:
+            return False
+    return True
+
+def solve_n_queens_util(board, col, n):
+    if col >= n:
+        return True
+    for i in range(n):
+        if is_safe(board, i, col, n):
+            board[i][col] = 1
+            if solve_n_queens_util(board, col + 1, n):
+                return True
+            board[i][col] = 0
+    return False
+
+def solve_n_queens(n):
+    board = [[0 for _ in range(n)] for _ in range(n)]
+    if solve_n_queens_util(board, 0, n):
+        for row in board:
+            print(row)
+    else:
+        print("Solution does not exist.")
+
+# Example for N = 4
+solve_n_queens(4)
+
+
+3)
+
+% Facts
+has_feathers(eagle).
+has_feathers(penguin).
+lays_eggs(eagle).
+lays_eggs(penguin).
+lays_eggs(crocodile).
+has_scales(crocodile).
+has_scales(snake).
+
+% Rules
+bird(X) :- has_feathers(X), lays_eggs(X).
+reptile(X) :- has_scales(X), lays_eggs(X).
+
+% Queries
+% ?- bird(eagle).
+% ?- reptile(crocodile).
+
+
+4)
+
+% Facts
+feature(rose, flowering).
+feature(rose, thorny).
+feature(cactus, succulent).
+feature(cactus, thorny).
+feature(mango, fruit_bearing).
+feature(mango, woody).
+
+% Rules
+classify(rose, shrub) :- feature(rose, flowering), feature(rose, thorny).
+classify(cactus, succulent) :- feature(cactus, succulent).
+classify(mango, tree) :- feature(mango, fruit_bearing), feature(mango, woody).
+
