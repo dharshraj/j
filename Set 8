@@ -1,0 +1,110 @@
+1)
+
+from constraint import Problem
+
+problem = Problem()
+
+# Regions
+regions = ['A', 'B', 'C', 'D', 'E']
+colors = ['Red', 'Green', 'Blue']
+
+# Add variables
+problem.addVariables(regions, colors)
+
+# Adjacency constraints
+problem.addConstraint(lambda a, b: a != b, ('A', 'B'))
+problem.addConstraint(lambda a, b: a != b, ('A', 'C'))
+problem.addConstraint(lambda a, b: a != b, ('B', 'C'))
+problem.addConstraint(lambda a, b: a != b, ('C', 'D'))
+problem.addConstraint(lambda a, b: a != b, ('D', 'E'))
+problem.addConstraint(lambda a, b: a != b, ('C', 'E'))
+
+# Get solution
+solution = problem.getSolution()
+print("Valid coloring:", solution)
+
+
+2)
+
+from queue import PriorityQueue
+
+graph = {
+    'A': [('B', 1), ('C', 4)],
+    'B': [('D', 2), ('E', 5)],
+    'C': [('E', 1)],
+    'D': [('F', 3)],
+    'E': [('F', 3)],
+    'F': []
+}
+
+heuristic = {'A': 7, 'B': 6, 'C': 4, 'D': 1, 'E': 2, 'F': 0}
+
+def a_star(start, goal):
+    pq = PriorityQueue()
+    pq.put((0 + heuristic[start], 0, start, [start]))
+
+    while not pq.empty():
+        f, cost, node, path = pq.get()
+        if node == goal:
+            return path, cost
+
+        for neighbor, weight in graph[node]:
+            total_cost = cost + weight
+            f = total_cost + heuristic[neighbor]
+            pq.put((f, total_cost, neighbor, path + [neighbor]))
+
+path, cost = a_star('A', 'F')
+print("Optimal path:", path)
+print("Total cost:", cost)
+
+
+3)
+
+% Facts
+rule(likes_milk, (mammal(X), not(carnivore(X)))).
+rule(can_fly, (bird(X), not(penguin(X)))).
+
+mammal(cow).
+mammal(elephant).
+carnivore(tiger).
+bird(eagle).
+bird(penguin).
+
+% Rules
+likes_milk(X) :- mammal(X), \+ carnivore(X).
+can_fly(X) :- bird(X), \+ penguin(X).
+
+% Queries
+% ?- likes_milk(cow).
+% ?- can_fly(eagle).
+
+
+4)
+% Predicates
+% diagnosis(Car, Fault): Determines fault in a car.
+% problem(Car, Symptom): Observes car's symptoms.
+
+% Facts
+problem(car1, engine_noise).
+problem(car1, oil_leak).
+problem(car2, battery_low).
+problem(car2, slow_start).
+problem(car3, flat_tire).
+
+% Rules
+diagnosis(car1, engine_failure) :-
+    problem(car1, engine_noise),
+    problem(car1, oil_leak).
+
+diagnosis(car2, battery_issue) :-
+    problem(car2, battery_low),
+    problem(car2, slow_start).
+
+diagnosis(car3, tire_puncture) :-
+    problem(car3, flat_tire).
+
+% Example Queries:
+% ?- diagnosis(car1, Fault).
+% ?- diagnosis(car2, Fault).
+% ?- diagnosis(car3, Fault).
+
