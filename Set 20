@@ -1,0 +1,118 @@
+1)
+graph = {
+    '1': ['2', '3'],
+    '2': ['4', '5'],
+    '3': [],
+    '4': [],
+    '5': []
+}
+
+goal = '3'
+limit = 1
+
+def limited_dfs(node, depth):
+    print(f"Visiting Node: {node} at depth {depth}")
+    if node == goal:
+        print("Goal found!")
+        return True
+    if depth >= limit:
+        return False
+    for child in graph.get(node, []):
+        if limited_dfs(child, depth + 1):
+            return True
+    return False
+
+start_node = '1'
+if not limited_dfs(start_node, 0):
+    print("Goal not found within depth limit.")
+
+2)
+
+import math
+
+def alpha_beta_pruning(node, depth, alpha, beta, maximizingPlayer, values, tree):
+    if depth == 0 or node not in tree:
+        return values.get(node, None)
+
+    if maximizingPlayer:
+        maxEval = -math.inf
+        for child in tree[node]:
+            eval = alpha_beta_pruning(child, depth - 1, alpha, beta, False, values, tree)
+            maxEval = max(maxEval, eval)
+            alpha = max(alpha, eval)
+            if beta <= alpha:
+                break
+        return maxEval
+    else:
+        minEval = math.inf
+        for child in tree[node]:
+            eval = alpha_beta_pruning(child, depth - 1, alpha, beta, True, values, tree)
+            minEval = min(minEval, eval)
+            beta = min(beta, eval)
+            if beta <= alpha:
+                break
+        return minEval
+
+tree = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G'],
+    'D': ['3', '5'],
+    'E': ['6', '9'],
+    'F': ['1', '2'],
+    'G': ['0', '-1']
+}
+
+values = {
+    '3': 3, '5': 5, '6': 6, '9': 9,
+    '1': 1, '2': 2, '0': 0, '-1': -1
+}
+
+optimal_value = alpha_beta_pruning('A', 3, -math.inf, math.inf, True, values, tree)
+print("Optimal Value:", optimal_value)
+
+
+3)
+% Base case
+move(1, A, B, _, [move(A, B)], 1) :- !.
+
+% Recursive case
+move(N, A, B, C, Moves, TotalTime) :-
+    N > 1,
+    N1 is N - 1,
+    move(N1, A, C, B, Moves1, T1),
+    move(1, A, B, _, [Move2], T2),
+    move(N1, C, B, A, Moves3, T3),
+    append(Moves1, [Move2|Moves3], Moves),
+    TotalTime is T1 + T2 + T3.
+
+% Wrapper with move limit check
+hanoi_with_limit(N, Limit) :-
+    move(N, left, right, center, Moves, TotalTime),
+    length(Moves, MoveCount),
+    (MoveCount =< Limit ->
+        (write('Moves: '), nl, write(Moves), nl, write('Total Time: '), write(TotalTime))
+    ;
+        write('Move limit exceeded.')
+    ).
+
+
+4)
+
+% Facts
+male(john).
+male(mike).
+female(susan).
+female(lily).
+
+parent(john, mike).
+parent(susan, mike).
+parent(john, lily).
+parent(susan, lily).
+
+% Rules
+father(X, Y) :- male(X), parent(X, Y).
+mother(X, Y) :- female(X), parent(X, Y).
+sibling(X, Y) :- parent(Z, X), parent(Z, Y), X \= Y.
+grandparent(X, Y) :- parent(X, Z), parent(Z, Y).
+
