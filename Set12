@@ -1,0 +1,102 @@
+1)
+from collections import deque
+
+def is_goal(state):
+    return state[0] == 2  # 2 gallons in 4-gallon jug
+
+def successors(state):
+    (jug4, jug3) = state
+    result = []
+
+    # Fill jugs
+    result.append((4, jug3))
+    result.append((jug4, 3))
+
+    # Empty jugs
+    result.append((0, jug3))
+    result.append((jug4, 0))
+
+    # Pour from jug4 to jug3
+    transfer = min(jug4, 3 - jug3)
+    result.append((jug4 - transfer, jug3 + transfer))
+
+    # Pour from jug3 to jug4
+    transfer = min(jug3, 4 - jug4)
+    result.append((jug4 + transfer, jug3 - transfer))
+
+    return result
+
+def bfs(start):
+    visited = set()
+    queue = deque([(start, [])])
+    while queue:
+        (state, path) = queue.popleft()
+        if state in visited:
+            continue
+        visited.add(state)
+        if is_goal(state):
+            return path + [state]
+        for s in successors(state):
+            queue.append((s, path + [state]))
+
+solution = bfs((0, 0))
+for step in solution:
+    print(step)
+
+2)
+import itertools
+
+def solve_crypt():
+    letters = 'SENDMORY'
+    digits = '0123456789'
+    for perm in itertools.permutations(digits, len(letters)):
+        s = dict(zip(letters, perm))
+        if s['S'] == '0' or s['M'] == '0':
+            continue
+        send = int(s['S'] + s['E'] + s['N'] + s['D'])
+        more = int(s['M'] + s['O'] + s['R'] + s['E'])
+        money = int(s['M'] + s['O'] + s['N'] + s['E'] + s['Y'])
+        if send + more == money:
+            print(f"SEND = {send}, MORE = {more}, MONEY = {money}")
+            return
+
+solve_crypt()
+
+3)
+% Facts
+bird(eagle).
+bird(sparrow).
+bird(penguin).
+
+% Rules
+fly(penguin) :- !, fail.
+fly(X) :- bird(X).
+
+% Query:
+% ?- fly(eagle).   → true
+% ?- fly(penguin). → false
+% ?- fly(X).       → Returns all birds except penguin
+
+
+4)
+
+% Facts
+female(pam). female(liz). female(ann). female(pat).
+male(tom). male(bob). male(jim).
+
+% Example parent facts (add based on scenario)
+parent(pam, bob).
+parent(tom, bob).
+parent(pam, liz).
+parent(tom, liz).
+parent(bob, ann).
+parent(bob, pat).
+parent(liz, jim).
+
+% Relations
+mother(X, Y) :- female(X), parent(X, Y).
+father(X, Y) :- male(X), parent(X, Y).
+grandfather(X, Y) :- male(X), parent(X, Z), parent(Z, Y).
+grandmother(X, Y) :- female(X), parent(X, Z), parent(Z, Y).
+sister(X, Y) :- female(X), parent(Z, X), parent(Z, Y), X \= Y.
+brother(X, Y) :- male(X), parent(Z, X), parent(Z, Y), X \= Y.
