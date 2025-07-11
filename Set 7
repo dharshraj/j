@@ -1,0 +1,112 @@
+1)
+
+def dfs(graph, start, goal, visited=None, path=None):
+    if visited is None:
+        visited = set()
+    if path is None:
+        path = []
+
+    visited.add(start)
+    path.append(start)
+
+    if start == goal:
+        return path
+
+    for neighbor in graph.get(start, []):
+        if neighbor not in visited:
+            result = dfs(graph, neighbor, goal, visited, path)
+            if result is not None:
+                return result
+    path.pop()
+    return None
+
+# Define the graph as an adjacency list
+graph = {
+    1: [2, 0],
+    2: [4],
+    0: [3],
+    3: [],
+    4: []
+}
+
+start_state = 1
+goal_state = 4
+
+path = dfs(graph, start_state, goal_state)
+print("DFS Path from 1 to 4:", path)
+
+
+2)
+
+def is_safe(board, row, col):
+    for i in range(row):
+        if board[i] == col or \
+           board[i] - i == col - row or \
+           board[i] + i == col + row:
+            return False
+    return True
+
+def solve_n_queens(n):
+    def backtrack(row):
+        if row == n:
+            solutions.append(board[:])
+            return
+        for col in range(n):
+            if is_safe(board, row, col):
+                board[row] = col
+                backtrack(row + 1)
+
+    board = [-1] * n
+    solutions = []
+    backtrack(0)
+    return solutions
+
+solutions = solve_n_queens(4)
+for sol in solutions:
+    print("Solution:", sol)
+
+
+3)
+
+% Facts
+rainy(mumbai).
+rainy(delhi).
+windy(chennai).
+cold(delhi).
+
+% Rules
+carry_umbrella(X) :- rainy(X).
+carry_umbrella(X) :- windy(X).
+
+wear_warm_clothes(X) :- cold(X), rainy(X).
+
+% Sample Queries:
+% ?- carry_umbrella(delhi).
+% ?- wear_warm_clothes(delhi).
+
+
+4)
+
+% Facts
+type(car, four_wheeler).
+type(bike, two_wheeler).
+type(bus, four_wheeler).
+type(scooter, two_wheeler).
+
+fuel(car, petrol).
+fuel(bike, petrol).
+fuel(bus, diesel).
+fuel(scooter, petrol).
+
+% Rules
+vehicle_info(Vehicle, Type, Fuel) :-
+    type(Vehicle, Type),
+    fuel(Vehicle, Fuel).
+
+% Sample Queries:
+% ?- vehicle_info(bus, Type, Fuel).
+% ?- vehicle_info(car, Type, Fuel).
+
+
+
+
